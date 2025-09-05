@@ -27,7 +27,17 @@ import torch
 import torch.distributed as dist
 from torch import nn
 
-from transformers.deepspeed import is_deepspeed_zero3_enabled
+try:
+    # 新しめの Transformers
+    from transformers.integrations.deepspeed import is_deepspeed_zero3_enabled
+except Exception:
+    try:
+        # 互換: 古い Transformers
+        from transformers.deepspeed import is_deepspeed_zero3_enabled
+    except Exception:
+        # Deepspeed を使わない環境でも安全に読み込めるフォールバック
+        def is_deepspeed_zero3_enabled() -> bool:
+            return False
 from transformers.modeling_outputs import CausalLMOutputWithPast, Seq2SeqLMOutput
 from transformers.models.auto import (
     MODEL_FOR_CAUSAL_IMAGE_MODELING_MAPPING,

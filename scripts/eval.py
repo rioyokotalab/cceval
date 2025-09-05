@@ -29,7 +29,7 @@ from transformers import (
     AutoModelForCausalLM
 )
 
-import custom_generate
+#import custom_generate
 from eval_metric import compute_metric_stmt
 from eval_utils import compute_mean_logp
 
