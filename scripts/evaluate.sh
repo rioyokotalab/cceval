@@ -1,3 +1,4 @@
+
 #!/bin/bash
 #PBS -q rt_HG
 #PBS -N cceval
@@ -27,102 +28,34 @@ export TMP_DIR="/groups/gcg51558/kawamura/tmp"
 export HF_HOME="/groups/gcg51558/kawamura/hf_cache"
 
 export CUDA_VISIBLE_DEVICES=0
-export gpus=1
-export model="deepseek-ai/deepseek-coder-1.3b-base"
 
-export task=line_completion_rg1_bm25
 export LD_LIBRARY_PATH="$HOME/opt/sqlite3/lib:$LD_LIBRARY_PATH" #ここ三行は自分だけの話
 export PATH="$PWD/.venv_cceval/bin:$PATH"
 hash -r
 
-export language=python
-export output_dir="results/${model}/${task}/${language}"
-mkdir -p $output_dir
-python scripts/vllm_inference.py \
-  --tp $gpus \
-  --task $task \
-  --language $language \
-  --model $model \
-  --output_dir $output_dir \
-  --use_crossfile_context \
-  --temperature 0.0 \
-  --model_max_tokens 8192 \
-  --crossfile_max_tokens 2048
+export LC_ALL="POSIX"
 
-export ts_lib=./build/${language}-lang-parser.so; 
-export prompt_file=./data/${language}/${task}.jsonl 
-python scripts/eval.py \
-  --prompt_file $prompt_file \
-  --output_dir $output_dir \
-  --ts_lib $ts_lib \
-  --language $language \
-  --only_compute_metric
 
-export language=typescript
-export output_dir="results/${model}/${task}/${language}"
-mkdir -p $output_dir
-python scripts/vllm_inference.py \
-  --tp $gpus \
-  --task $task \
-  --language $language \
-  --model $model \
-  --output_dir $output_dir \
-  --use_crossfile_context \
-  --temperature 0.0 \
-  --model_max_tokens 8192 \
-  --crossfile_max_tokens 2048
+INPUT_MODEL=${1:-"deepseek-ai/deepseek-coder-33b-base"}
+OUTPUT_DIR="results/${INPUT_MODEL}"
+TP=1
 
-export ts_lib=./build/${language}-lang-parser.so; 
-export prompt_file=./data/${language}/${task}.jsonl 
-python scripts/eval.py \
-  --prompt_file $prompt_file \
-  --output_dir $output_dir \
-  --ts_lib $ts_lib \
-  --language $language \
-  --only_compute_metric
+export TOKENIZERS_PARALLELISM=false
+export VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
 
-export language=csharp
-export output_dir="results/${model}/${task}/${language}"
-mkdir -p $output_dir
-python scripts/vllm_inference.py \
-  --tp $gpus \
-  --task $task \
-  --language $language \
-  --model $model \
-  --output_dir $output_dir \
-  --use_crossfile_context \
-  --temperature 0.0 \
-  --model_max_tokens 8192 \
-  --crossfile_max_tokens 2048
-
-export ts_lib=./build/${language}-lang-parser.so; 
-export prompt_file=./data/${language}/${task}.jsonl 
-python scripts/eval.py \
-  --prompt_file $prompt_file \
-  --output_dir $output_dir \
-  --ts_lib $ts_lib \
-  --language $language \
-  --only_compute_metric
-
-export language=java
-export output_dir="results/${model}/${task}/${language}"
-mkdir -p $output_dir
-python scripts/vllm_inference.py \
-  --tp $gpus \
-  --task $task \
-  --language $language \
-  --model $model \
-  --output_dir $output_dir \
-  --use_crossfile_context \
-  --temperature 0.0 \
-  --model_max_tokens 8192 \
-  --crossfile_max_tokens 2048
-
-export ts_lib=./build/${language}-lang-parser.so; 
-export prompt_file=./data/${language}/${task}.jsonl 
-python scripts/eval.py \
-  --prompt_file $prompt_file \
-  --output_dir $output_dir \
-  --ts_lib $ts_lib \
-  --language $language \
-  --only_compute_metric
+echo "Running CrossCodeEval"
+mkdir -p ${OUTPUT_DIR}
+python scripts/evaluate.py \
+    --task line_completion \
+    --model_type codelm_right_cfc_left \
+    --model_name_or_path ${INPUT_MODEL} \
+    --cfc_seq_length 2048 \
+    --right_context_length 2048 \
+    --prompt_file data/LANGUAGE/line_completion_oracle_bm25.jsonl \
+    --gen_length 50 \
+    --max_seq_length 8192 \
+    --output_dir ${OUTPUT_DIR} \
+    --dataset cceval \
+    --tp ${TP} \
+    --ts_lib build/LANGUAGE-lang-parser.so \
+    --language python java csharp typescript

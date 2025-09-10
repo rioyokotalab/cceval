@@ -153,7 +153,7 @@ def main():
     # load model
     llm = LLM(model=args.model, tensor_parallel_size=args.tp_size, max_model_len=args.model_max_tokens)
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
-    sampling_params = SamplingParams(temperature=args.temperature, top_p=args.top_p, max_tokens=args.generation_max_tokens)
+    sampling_params = SamplingParams(temperature=args.temperature, top_p=args.top_p, max_tokens=args.generation_max_tokens, stop=["\n"])
 
     # setup paths
     if not os.path.isdir(args.output_dir):
