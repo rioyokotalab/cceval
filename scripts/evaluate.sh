@@ -36,7 +36,7 @@ hash -r
 export LC_ALL="POSIX"
 
 
-INPUT_MODEL=${1:-"deepseek-ai/deepseek-coder-33b-base"}
+INPUT_MODEL=${1:-"tokyotech-llm/Llama-3.1-8B-swallow-code-exp10-iter0012500"}
 OUTPUT_DIR="results/${INPUT_MODEL}"
 TP=1
 

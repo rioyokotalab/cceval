@@ -17,7 +17,7 @@ def prepare_prompt(tokenizer, task, model_type, model_name, left_cxt, right_cxt=
         prefix_token = '<fim_prefix>'
         middle_token = '<fim_middle>'
         suffix_token = '<fim_suffix>'
-    elif "qwen" in model_name.lower():
+    elif "qwen" in model_name.lower() or "swallow" in model_name.lower():
         prefix_token = '<|fim_prefix|>'
         middle_token = '<|fim_middle|>'
         suffix_token = '<|fim_suffix|>'
