@@ -506,8 +506,8 @@ def compute_metric_stmt_multilang(args):
         "per_language": all_task_results
     }
     if args.all_result_csv:
-        date_scores_row(args.all_result_csv, args.model_name_or_path, 3, "cceval EM", f"{round(weighted_em, 4):.3f}")
-        date_scores_row(args.all_result_csv, args.model_name_or_path, 4, "cceval ES", f"{round(weighted_es, 4):.3f}")
+        update_scores_row(args.all_result_csv, args.model_name_or_path, 3, "cceval EM", f"{round(weighted_em, 4):.3f}")
+        update_scores_row(args.all_result_csv, args.model_name_or_path, 4, "cceval ES", f"{round(weighted_es, 4):.3f}")
 
 
 
