@@ -59,4 +59,5 @@ python scripts/evaluate.py \
     --tp ${TP} \
     --ts_lib build/LANGUAGE-lang-parser.so \
     --language python java csharp typescript \
-    --all_result_csv "../${RESULT_CSV}"
+    --all_result_csv "../${RESULT_CSV}" \
+    --fim_type "psm"

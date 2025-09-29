@@ -7,7 +7,7 @@ def prepare_prompt(tokenizer, task, model_type, model_name, left_cxt, right_cxt=
     if task == "function_completion":
         args.gen_length = 256
 
-    
+
     # 设置模型特定的tokens
     if "deepseek" in model_name.lower():
         prefix_token = '<｜fim▁begin｜>'
@@ -24,12 +24,17 @@ def prepare_prompt(tokenizer, task, model_type, model_name, left_cxt, right_cxt=
     else:
         prefix_token = '<fim_prefix>'
         middle_token = '<fim_middle>'
-        suffix_token = '<fim_suffix>'
-        
+        suffix_token = '<fim_suffixr'
+
     if model_type == "codelm_leftright_context":
         left_cxt_truncated = tokenizer.decode(tokenizer.encode(left_cxt)[-(args.max_seq_length - args.gen_length - args.right_context_length):])
         right_cxt_truncated = tokenizer.decode(tokenizer.encode(right_cxt)[:args.right_context_length])
-        prompt = f'{prefix_token}{left_cxt_truncated}{suffix_token}{right_cxt_truncated}{middle_token}'
+        if args.fim_type == "psm":
+            prompt = f'{prefix_token}{left_cxt_truncated}{suffix_token}{right_cxt_truncated}{middle_token}'
+        elif args.fim_type == "spm-1":
+            prompt = f'{suffix_token}{right_cxt_truncated}{prefix_token}{left_cxt_truncated}{middle_token}'
+        elif args.fim_type == "spm-2":
+            prompt = f'{prefix_token}{suffix_token}{right_cxt_truncated}{middle_token}{left_cxt_truncated}'
     elif model_type == "codelm_right_cfc_left":
         assert crossfile_cxt is not None
         left_cxt_truncated = tokenizer.decode(tokenizer.encode(left_cxt)[-(args.max_seq_length - args.gen_length - args.right_context_length - args.cfc_seq_length):])

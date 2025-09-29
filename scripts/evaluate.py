@@ -148,6 +148,7 @@ def cceval(custom_args: Optional[argparse.Namespace] = None) -> None:
         parser.add_argument("--compute_cceval_metric", action='store_true', help="use cceval metric")
         parser.add_argument("--task", type=str, required=True, choices=["line_completion", "function_completion", "api_completion"])
         parser.add_argument("--all_result_csv", type=str, default=None)
+        parser.add_argument("--fim_type", type=str, default="psm")
         args = parser.parse_args()
     else:
         args = custom_args
